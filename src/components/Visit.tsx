@@ -1,150 +1,137 @@
 "use client";
 
+import { useLayoutEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion } from "framer-motion";
-import { Phone, Camera, Mail, MapPin, Clock, Navigation } from "lucide-react";
+import { Phone, Camera, Mail, MapPin, Clock } from "lucide-react";
 import Reveal from "./Reveal";
-import SplitReveal from "./SplitReveal";
 import Magnetic from "./Magnetic";
 import { BUSINESS } from "@/data/site";
 import { IMAGES } from "@/data/images";
 
+gsap.registerPlugin(ScrollTrigger);
+
 export default function Visit() {
+  const ref = useRef<HTMLElement>(null);
+
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      // giant type scales in as you arrive
+      gsap.from(".visit-giant", {
+        scale: 0.85,
+        opacity: 0,
+        duration: 1.4,
+        ease: "power4.out",
+        scrollTrigger: { trigger: ref.current, start: "top 60%", once: true },
+      });
+      gsap.utils.toArray<HTMLElement>(".visit-line").forEach((el, i) => {
+        gsap.from(el, {
+          yPercent: 110,
+          duration: 1,
+          ease: "power4.out",
+          delay: i * 0.1,
+          scrollTrigger: { trigger: el, start: "top 88%", once: true },
+        });
+      });
+    }, ref);
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section id="visit" className="relative overflow-hidden bg-ink py-24 sm:py-32">
+    <section ref={ref} id="visit" className="relative overflow-hidden bg-ink py-28 sm:py-40">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-1/2 h-[30rem] w-[30rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/10 blur-3xl" />
+        <div className="absolute left-1/2 top-0 h-[36rem] w-[70rem] -translate-x-1/2 rounded-full bg-gold/10 blur-[140px]" />
       </div>
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-5 sm:px-8 lg:grid-cols-2">
-        <div>
-          <Reveal>
-            <p className="text-xs font-black tracking-[0.3em] text-goldlight uppercase">
-              Visit the shop
-            </p>
-            <SplitReveal
-              text="In the heart of downtown"
-              accent="downtown"
-              accentClassName="italic text-gold"
-              className="mt-3 font-display text-4xl font-black tracking-tight text-cream sm:text-6xl"
-            />
-            <p className="mt-4 max-w-lg text-lg text-cream/65">
-              Walk-ins welcome. Bring the pair you thought was done for —
-              we&apos;ll tell you honestly what&apos;s possible.
-            </p>
-          </Reveal>
+      <div className="relative mx-auto max-w-7xl px-5 text-center sm:px-8">
+        <p className="text-xs font-black tracking-[0.35em] text-goldlight uppercase">
+          Walk-ins welcome
+        </p>
+        <h2 className="visit-giant mx-auto mt-8 max-w-5xl font-display text-[13vw] font-black leading-[0.9] tracking-tight text-cream sm:text-8xl">
+          <span className="block overflow-hidden pb-2">
+            <span className="visit-line block">
+              BRING THEM IN <span className="italic text-goldlight">TIRED.</span>
+            </span>
+          </span>
+        </h2>
+        <p className="mx-auto mt-6 max-w-xl text-lg text-cream/60">
+          We&apos;ll tell you honestly what&apos;s possible — and hand them
+          back reborn.
+        </p>
 
-          <Reveal delay={0.15}>
-            <div className="mt-8 space-y-4">
-              <a
-                href={BUSINESS.mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-start gap-4 rounded-2xl border border-cream/10 bg-white/5 p-5 transition-colors hover:border-gold/40"
-              >
-                <MapPin className="mt-1 h-5 w-5 shrink-0 text-goldlight" />
-                <span>
-                  <span className="block font-bold text-cream">{BUSINESS.address}</span>
-                  <span className="mt-1 block text-sm text-cream/50">
-                    Beside Spier &amp; Mackay · Financial district
-                  </span>
-                </span>
-              </a>
-
-              <div className="rounded-2xl border border-cream/10 bg-white/5 p-5">
-                <p className="flex items-center gap-2 text-sm font-black tracking-widest text-goldlight uppercase">
-                  <Clock className="h-4 w-4" /> Hours
-                </p>
-                <div className="mt-3 space-y-2">
-                  {BUSINESS.hours.map((h) => (
-                    <div key={h.day} className="flex justify-between text-sm">
-                      <span className="font-semibold text-cream/70">{h.day}</span>
-                      <span className="font-bold text-cream">{h.time}</span>
-                    </div>
-                  ))}
-                </div>
-                <p className="mt-3 text-xs leading-relaxed text-cream/40">
-                  {BUSINESS.hoursNote}
-                </p>
-              </div>
-
-              <a
-                href={`mailto:${BUSINESS.email}`}
-                className="flex items-center gap-4 rounded-2xl border border-cream/10 bg-white/5 p-5 transition-colors hover:border-gold/40"
-              >
-                <Mail className="h-5 w-5 shrink-0 text-goldlight" />
-                <span className="font-bold text-cream">{BUSINESS.email}</span>
-              </a>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.25} className="mt-8 flex flex-wrap gap-4">
-            <Magnetic>
-              <motion.a
-                href={BUSINESS.phoneHref}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.96 }}
-                className="flex items-center gap-2 rounded-full bg-gold px-8 py-4 text-lg font-black text-ink shadow-[0_16px_50px_rgba(201,143,46,0.35)]"
-              >
-                <Phone className="h-5 w-5" />
-                {BUSINESS.phone}
-              </motion.a>
-            </Magnetic>
-            <Magnetic strength={0.28}>
-              <motion.a
-                href={BUSINESS.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.96 }}
-                className="flex items-center gap-2 rounded-full border-2 border-cream/25 px-8 py-4 text-lg font-bold text-cream transition-colors hover:border-goldlight hover:text-goldlight"
-              >
-                <Camera className="h-5 w-5" />
-                Instagram
-              </motion.a>
-            </Magnetic>
-            <Magnetic strength={0.28}>
-              <motion.a
-                href={BUSINESS.mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.96 }}
-                className="flex items-center gap-2 rounded-full border-2 border-cream/25 px-8 py-4 text-lg font-bold text-cream transition-colors hover:border-goldlight hover:text-goldlight"
-              >
-                <Navigation className="h-5 w-5" />
-                Directions
-              </motion.a>
-            </Magnetic>
-          </Reveal>
-        </div>
-
-        <Reveal delay={0.2} className="relative">
-          <div className="overflow-hidden rounded-[2.5rem] shadow-2xl">
-            <img
-              src={IMAGES.visit}
-              alt="Finished leather shoes at Rob's Best Foot Forward"
-              className="aspect-[4/5] w-full object-cover"
-            />
-            <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-t from-ink/60 via-transparent to-transparent" />
-          </div>
-          <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between rounded-2xl bg-ink/70 px-5 py-4 backdrop-blur-md">
-            <div>
-              <p className="font-display text-lg font-bold text-cream">
-                {BUSINESS.phoneVanity}
-              </p>
-              <p className="text-xs font-bold tracking-widest text-cream/50 uppercase">
-                Easy to remember
-              </p>
-            </div>
-            <a
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          <Magnetic>
+            <motion.a
               href={BUSINESS.phoneHref}
-              className="grid h-12 w-12 place-items-center rounded-full bg-gold text-ink"
-              aria-label={`Call ${BUSINESS.name}`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.96 }}
+              className="flex items-center gap-2 rounded-full bg-gold px-10 py-5 text-xl font-black text-ink shadow-[0_18px_60px_rgba(201,143,46,0.4)]"
             >
               <Phone className="h-5 w-5" />
+              {BUSINESS.phone}
+            </motion.a>
+          </Magnetic>
+          <Magnetic strength={0.28}>
+            <motion.a
+              href={BUSINESS.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.96 }}
+              className="flex items-center gap-2 rounded-full border-2 border-cream/25 px-10 py-5 text-xl font-bold text-cream transition-colors hover:border-goldlight hover:text-goldlight"
+            >
+              <MapPin className="h-5 w-5" />
+              Get directions
+            </motion.a>
+          </Magnetic>
+        </div>
+
+        <div className="mx-auto mt-16 grid max-w-4xl gap-4 text-left sm:grid-cols-3">
+          <Reveal className="rounded-3xl border border-cream/10 bg-white/5 p-6">
+            <p className="flex items-center gap-2 text-xs font-black tracking-[0.25em] text-goldlight uppercase">
+              <MapPin className="h-4 w-4" /> Find us
+            </p>
+            <p className="mt-3 font-semibold leading-relaxed text-cream/80">
+              {BUSINESS.address}
+            </p>
+            <p className="mt-1 text-sm text-cream/40">Beside Spier &amp; Mackay</p>
+          </Reveal>
+          <Reveal delay={0.1} className="rounded-3xl border border-cream/10 bg-white/5 p-6">
+            <p className="flex items-center gap-2 text-xs font-black tracking-[0.25em] text-goldlight uppercase">
+              <Clock className="h-4 w-4" /> Hours
+            </p>
+            <div className="mt-3 space-y-1.5 text-sm">
+              {BUSINESS.hours.map((h) => (
+                <div key={h.day} className="flex justify-between gap-2">
+                  <span className="text-cream/55">{h.day}</span>
+                  <span className="font-bold whitespace-nowrap text-cream/85">{h.time}</span>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+          <Reveal delay={0.2} className="rounded-3xl border border-cream/10 bg-white/5 p-6">
+            <p className="flex items-center gap-2 text-xs font-black tracking-[0.25em] text-goldlight uppercase">
+              <Mail className="h-4 w-4" /> Reach us
+            </p>
+            <a href={`mailto:${BUSINESS.email}`} className="mt-3 block break-all font-semibold text-cream/80 hover:text-goldlight">
+              {BUSINESS.email}
             </a>
-          </div>
-        </Reveal>
+            <a
+              href={BUSINESS.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 flex items-center gap-2 font-semibold text-cream/80 hover:text-goldlight"
+            >
+              <Camera className="h-4 w-4" /> @robsbestfootforward
+            </a>
+            <p className="mt-2 text-sm font-bold text-goldlight">{BUSINESS.phoneVanity}</p>
+          </Reveal>
+        </div>
+      </div>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-64 opacity-40">
+        <img src={IMAGES.visit} alt="" aria-hidden="true" className="h-full w-full object-cover [mask-image:linear-gradient(to_top,black,transparent)]" />
       </div>
     </section>
   );

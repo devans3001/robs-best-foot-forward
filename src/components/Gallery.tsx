@@ -3,11 +3,30 @@
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { MoveRight } from "lucide-react";
 import { IMAGES } from "@/data/images";
-import { BUSINESS } from "@/data/site";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const PANELS = [
+  {
+    n: "01",
+    title: "Assess",
+    text: "Every pair gets an honest diagnosis. If it can't be saved beautifully, we'll tell you straight — no charge for the truth.",
+    src: IMAGES.panels[0],
+  },
+  {
+    n: "02",
+    title: "Restore",
+    text: "Resoled, re-heeled, re-stitched by hand with traditional methods. Built to outlast the original — never just glued.",
+    src: IMAGES.panels[1],
+  },
+  {
+    n: "03",
+    title: "Revive",
+    text: "Cleaned, conditioned, polished. You pick up footwear that looks, feels, and smells brand new again.",
+    src: IMAGES.panels[2],
+  },
+];
 
 export default function Gallery() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -32,27 +51,47 @@ export default function Gallery() {
         },
       });
 
-      gsap.utils.toArray<HTMLElement>(".g-card").forEach((card) => {
-        const img = card.querySelector(".g-img");
-        if (!img) return;
-        gsap.fromTo(
-          img,
-          { xPercent: -9 },
-          {
-            xPercent: 9,
-            ease: "none",
-            scrollTrigger: {
-              trigger: card,
-              containerAnimation: scrollTween,
-              start: "left right",
-              end: "right left",
-              scrub: true,
-            },
-          }
-        );
+      // each panel's image parallaxes within its frame
+      gsap.utils.toArray<HTMLElement>(".panel").forEach((panel) => {
+        const img = panel.querySelector(".panel-img");
+        const num = panel.querySelector(".panel-num");
+        if (img) {
+          gsap.fromTo(
+            img,
+            { xPercent: -8 },
+            {
+              xPercent: 8,
+              ease: "none",
+              scrollTrigger: {
+                trigger: panel,
+                containerAnimation: scrollTween,
+                start: "left right",
+                end: "right left",
+                scrub: true,
+              },
+            }
+          );
+        }
+        if (num) {
+          gsap.fromTo(
+            num,
+            { xPercent: 30 },
+            {
+              xPercent: -30,
+              ease: "none",
+              scrollTrigger: {
+                trigger: panel,
+                containerAnimation: scrollTween,
+                start: "left right",
+                end: "right left",
+                scrub: true,
+              },
+            }
+          );
+        }
       });
 
-      gsap.to(".g-progress", {
+      gsap.to(".ch2-progress", {
         scaleX: 1,
         ease: "none",
         scrollTrigger: {
@@ -62,18 +101,6 @@ export default function Gallery() {
           scrub: 0.6,
         },
       });
-
-      gsap.to(".g-head", {
-        yPercent: -60,
-        opacity: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top top",
-          end: "top -40%",
-          scrub: true,
-        },
-      });
     }, sectionRef);
     return () => ctx.revert();
   }, []);
@@ -81,65 +108,47 @@ export default function Gallery() {
   return (
     <section
       ref={sectionRef}
-      id="gallery"
-      className="relative flex h-screen flex-col justify-center overflow-hidden bg-ink"
+      className="relative flex h-screen flex-col justify-center overflow-hidden bg-espresso"
     >
-      <div className="g-head pointer-events-none absolute left-0 right-0 top-0 z-10 mx-auto max-w-7xl px-5 pt-24 sm:px-8">
-        <p className="text-xs font-black tracking-[0.3em] text-gold uppercase">
-          From the workbench — keep scrolling
+      <div className="pointer-events-none absolute left-0 right-0 top-0 z-10 px-5 pt-24 sm:px-8">
+        <p className="mx-auto max-w-7xl text-xs font-black tracking-[0.35em] text-gold uppercase">
+          Chapter 02 — The resurrection
         </p>
-        <h2 className="mt-3 font-display text-4xl font-black tracking-tight text-cream sm:text-6xl">
-          Proof, not <span className="italic text-gold">promises</span>
-        </h2>
       </div>
 
-      <div ref={trackRef} className="flex w-max items-center gap-6 px-[8vw] pt-16">
-        {IMAGES.gallery.map((s, i) => (
-          <figure
-            key={s.src}
-            className="g-card group relative h-[58vh] w-[78vw] shrink-0 overflow-hidden rounded-3xl shadow-2xl sm:w-[30rem]"
-          >
-            <div className="absolute inset-0 overflow-hidden">
-              <img
-                src={s.src}
-                alt={s.label}
-                loading={i === 0 ? "eager" : "lazy"}
-                className="g-img h-full w-[118%] max-w-none object-cover"
-              />
+      <div ref={trackRef} className="flex w-max items-stretch gap-[6vw] px-[8vw]">
+        {PANELS.map((p) => (
+          <article key={p.n} className="panel relative flex w-[82vw] shrink-0 items-center gap-8 sm:w-[72vw]">
+            <div
+              aria-hidden="true"
+              className="panel-num pointer-events-none absolute -top-16 left-0 font-display text-[10rem] font-black leading-none text-cream/[0.06] select-none"
+            >
+              {p.n}
             </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
-            <span className="absolute left-6 top-6 rounded-full bg-ink/60 px-4 py-1.5 font-display text-sm font-bold text-goldlight backdrop-blur">
-              0{i + 1}
-            </span>
-            <figcaption className="absolute bottom-6 left-6 font-display text-3xl font-bold text-cream">
-              {s.label}
-            </figcaption>
-          </figure>
+            <div className="relative h-[52vh] w-[42%] shrink-0 overflow-hidden rounded-[2rem]">
+              <img
+                src={p.src}
+                alt={p.title}
+                className="panel-img h-full w-[116%] max-w-none object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent" />
+            </div>
+            <div className="max-w-md">
+              <p className="font-display text-lg font-bold tracking-[0.3em] text-gold">
+                {p.n}
+              </p>
+              <h3 className="mt-3 font-display text-6xl font-black tracking-tight text-cream sm:text-7xl">
+                {p.title}
+              </h3>
+              <p className="mt-5 text-lg leading-relaxed text-cream/65">{p.text}</p>
+            </div>
+          </article>
         ))}
-
-        <div className="grid h-[58vh] w-[78vw] shrink-0 place-items-center sm:w-[30rem]">
-          <a
-            href={BUSINESS.instagram}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group rounded-3xl bg-gold p-10 text-center shadow-2xl transition-transform hover:scale-105"
-          >
-            <p className="font-display text-3xl font-bold text-ink">
-              See the transformations
-            </p>
-            <p className="mt-3 flex items-center justify-center gap-2 text-sm font-black tracking-widest text-ink/70 uppercase">
-              @robsbestfootforward <MoveRight className="h-4 w-4" />
-            </p>
-          </a>
-        </div>
       </div>
 
       <div className="absolute bottom-10 left-[8vw] right-[8vw] h-[3px] overflow-hidden rounded-full bg-cream/10">
-        <div className="g-progress h-full w-full origin-left scale-x-0 bg-gold" />
+        <div className="ch2-progress h-full w-full origin-left scale-x-0 bg-gold" />
       </div>
-      <p className="absolute bottom-16 left-[8vw] text-xs font-black tracking-[0.3em] text-cream/40 uppercase">
-        Scroll to travel →
-      </p>
     </section>
   );
 }
