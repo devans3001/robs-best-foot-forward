@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Phone, Sparkles } from "lucide-react";
+import { Menu, X, Phone, Footprints } from "lucide-react";
 import { BUSINESS, NAV_LINKS } from "@/data/site";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -47,7 +47,7 @@ export default function Navbar() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
         <a href="#top" className="flex items-center gap-2.5">
           <span className="grid h-10 w-10 place-items-center rounded-full bg-ink text-goldlight">
-            <Sparkles className="h-5 w-5" />
+            <Footprints className="h-5 w-5" />
           </span>
           <span
             className={`font-display text-xl font-bold tracking-tight transition-colors duration-500 ${
