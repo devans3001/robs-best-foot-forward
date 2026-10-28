@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Manrope } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 
 const playfair = Playfair_Display({
   variable: "--font-display",
@@ -32,6 +33,7 @@ export default function RootLayout({
         className={`${playfair.variable} ${manrope.variable} font-sans bg-cream text-ink antialiased`}
       >
         {children}
+        <Analytics />
       </body>
     </html>
   );
